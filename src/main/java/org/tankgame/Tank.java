@@ -6,8 +6,10 @@ package org.tankgame;
  */
 public class Tank {
     //坦克坐标
-    int x;
-    int y;
+    private int x;
+    private int y;
+    private int direct;
+    private int speed = 1;
 
     public Tank(int x, int y) {
         this.x = x;
@@ -28,5 +30,35 @@ public class Tank {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public int getDirect() {
+        return direct;
+    }
+
+    public void setDirect(int direct) {
+        this.direct = direct;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    //移动
+    public void moveUp(){
+        y-=speed;
+    }
+    public void moveRight(){
+        x+=speed;
+    }
+    public void moveDown(){
+        y+=speed;
+    }
+    public void moveLeft(){
+        x-=speed;
     }
 }

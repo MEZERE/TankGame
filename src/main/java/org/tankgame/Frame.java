@@ -14,8 +14,9 @@ public class Frame extends JFrame {
     }
     public Frame(){
         mp = new Panel();
-        this.add(mp);
+        this.add(mp);   //面板
         this.setSize(1000,750);
+        this.addKeyListener(mp);    //监听
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
     }
