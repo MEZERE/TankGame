@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Vector;
 
 /**
  * @author mzr
@@ -11,19 +12,30 @@ import java.awt.event.KeyListener;
  */
 public class Panel extends JPanel implements KeyListener {
 
+    int enemtNum = 3;
     Hero hero = null;
+    Vector<Enemy> enemys = new Vector<>();
 
     public Panel(){
-        hero = new Hero(100,100);   //初始化
+        hero = new Hero(200,100);   //初始化
         hero.setSpeed(5);
+        for (int i = 0; i < enemtNum; i++) {
+            Enemy enemy = new Enemy(100 * (i + 1), 0);
+            enemy.setDirect(2);
+            enemys.add(enemy);
+        }
     }
 
     @Override
     public void paint(Graphics g){
         super.paint(g);
         g.fillRect(0,0,1000,750);//填充矩形 默认黑色
-        //坦克
+        //我方坦克
         drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),0);
+        //敌方坦克
+        for (Enemy enemy : enemys) {
+            drawTank(enemy.getX(),enemy.getY(),g,enemy.getDirect(),1);
+        }
     }
 
     /**
@@ -38,10 +50,10 @@ public class Panel extends JPanel implements KeyListener {
         //类型
         switch(type){
             case 0: //我方
-                g.setColor(Color.CYAN);
+                g.setColor(Color.YELLOW);
                 break;
             case 1: //敌方
-                g.setColor(Color.YELLOW);
+                g.setColor(Color.CYAN);
                 break;
         }
         //方向 0上1右2下3左
