@@ -9,6 +9,7 @@ import java.util.Vector;
 public class Enemy extends Tank{
     //使用vector保存bullet
     Vector<Bullet> bullets = new Vector<>();
+    boolean isLive = true;
     public Enemy(int x, int y) {
         super(x, y);
     }

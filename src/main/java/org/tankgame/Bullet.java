@@ -41,7 +41,8 @@ public class Bullet implements Runnable{
                     break;
             }
             System.out.println("子弹："+ x + y);
-            if (!(x>=0 && x<=1000 && y>=0 && y <=750)){
+            //碰到墙 或者 敌人 结束线程
+            if (!(x>=0 && x<=1000 && y>=0 && y <=750 && isLive)){
                 isLive = false;
                 break;
             }

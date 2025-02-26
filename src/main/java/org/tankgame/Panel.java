@@ -44,13 +44,15 @@ public class Panel extends JPanel implements KeyListener,Runnable {
         drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),0);
         //敌方坦克
         for (Enemy enemy : enemys) {
-            drawTank(enemy.getX(),enemy.getY(),g,enemy.getDirect(),1);
-            for (int i = 0; i < enemy.bullets.size(); i++) {
-                Bullet bullet = enemy.bullets.get(i);
-                if(bullet != null && bullet.isLive){
-                    drawBullet(bullet.x,bullet.y,g,1);
-                } else {
-                    enemy.bullets.remove(bullet);
+            if(enemy.isLive){
+                drawTank(enemy.getX(),enemy.getY(),g,enemy.getDirect(),1);
+                for (int i = 0; i < enemy.bullets.size(); i++) {
+                    Bullet bullet = enemy.bullets.get(i);
+                    if(bullet != null && bullet.isLive){
+                        drawBullet(bullet.x,bullet.y,g,1);
+                    } else {
+                        enemy.bullets.remove(bullet);
+                    }
                 }
             }
         }
@@ -121,6 +123,26 @@ public class Panel extends JPanel implements KeyListener,Runnable {
         g.draw3DRect(x,y,1,1,false);
     }
 
+    //判断子弹是否击中敌人
+    public static void hitTank(Bullet b,Enemy enemy){
+        switch (enemy.getDirect()){
+            case 0: //向上向下
+            case 2:
+                if (b.x > enemy.getX() && b.x < enemy.getX() + 40 && b.y > enemy.getY() && b.y < enemy.getY() + 60){
+                    b.isLive = false;
+                    enemy.isLive = false;
+                }
+                break;
+            case 1: //向右向左
+            case 3:
+                if (b.x > enemy.getX() && b.x < enemy.getX() + 60 && b.y > enemy.getY() && b.y < enemy.getY() + 40){
+                    b.isLive = false;
+                    enemy.isLive = false;
+                }
+                break;
+        }
+    }
+
     @Override
     public void keyTyped(KeyEvent e) {
 
@@ -146,7 +168,7 @@ public class Panel extends JPanel implements KeyListener,Runnable {
         if(e.getKeyCode() == KeyEvent.VK_J){
             hero.shot();
         }
-        this.repaint();
+        //this.repaint();
     }
 
     @Override
@@ -162,6 +184,12 @@ public class Panel extends JPanel implements KeyListener,Runnable {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
+            }
+            //判读是否击中
+            if(hero.bullet !=null && hero.bullet.isLive){
+                for (Enemy enemy : enemys){
+                    hitTank(hero.bullet,enemy);
+                }
             }
             this.repaint();
         }
