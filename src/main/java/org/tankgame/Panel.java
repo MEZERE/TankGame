@@ -11,10 +11,16 @@ import java.util.Vector;
  * @version 1.0
  */
 public class Panel extends JPanel implements KeyListener,Runnable {
-
-    int enemtNum = 3;
     Hero hero = null;
+    //存放敌人
     Vector<Enemy> enemys = new Vector<>();
+    //存放炸弹
+    Vector<Bomb> bombs = new Vector<>();
+    int enemtNum = 3;
+    //爆炸图片
+    Image image1 = null;
+    Image image2 = null;
+    Image image3 = null;
 
     public Panel(){
         hero = new Hero(200,100);   //初始化
@@ -35,6 +41,10 @@ public class Panel extends JPanel implements KeyListener,Runnable {
     @Override
     public void paint(Graphics g){
         super.paint(g);
+        //初始化图片
+        image1 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/image/bomb_1.png"));
+        image2 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/image/bomb_2.png"));
+        image3 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/image/bomb_3.png"));
         g.fillRect(0,0,1000,750);//填充矩形 默认黑色
         //我方子弹
         if(hero.bullet != null && hero.bullet.isLive){
@@ -49,11 +59,29 @@ public class Panel extends JPanel implements KeyListener,Runnable {
                 for (int i = 0; i < enemy.bullets.size(); i++) {
                     Bullet bullet = enemy.bullets.get(i);
                     if(bullet != null && bullet.isLive){
+                        //敌方子弹
                         drawBullet(bullet.x,bullet.y,g,1);
                     } else {
                         enemy.bullets.remove(bullet);
                     }
                 }
+            }else {
+                enemys.remove(enemy);
+            }
+        }
+        //炸弹特效
+        for (int i = 0; i < bombs.size(); i++) {
+            Bomb bomb = bombs.get(i);
+            if(bomb.life > 6){
+                g.drawImage(image1,bomb.x,bomb.y,60,60,this);
+            } else if (bomb.life > 3){
+                g.drawImage(image2,bomb.x,bomb.y,60,60,this);
+            } else {
+                g.drawImage(image3,bomb.x,bomb.y,60,60,this);
+            }
+            bomb.lifeDown();
+            if (bomb.life == 0){
+                bombs.remove(bomb);
             }
         }
     }
@@ -124,13 +152,15 @@ public class Panel extends JPanel implements KeyListener,Runnable {
     }
 
     //判断子弹是否击中敌人
-    public static void hitTank(Bullet b,Enemy enemy){
+    public void hitTank(Bullet b,Enemy enemy){
         switch (enemy.getDirect()){
             case 0: //向上向下
             case 2:
                 if (b.x > enemy.getX() && b.x < enemy.getX() + 40 && b.y > enemy.getY() && b.y < enemy.getY() + 60){
                     b.isLive = false;
                     enemy.isLive = false;
+                    Bomb bomb = new Bomb(enemy.getX(), enemy.getY());
+                    bombs.add(bomb);
                 }
                 break;
             case 1: //向右向左
@@ -138,6 +168,8 @@ public class Panel extends JPanel implements KeyListener,Runnable {
                 if (b.x > enemy.getX() && b.x < enemy.getX() + 60 && b.y > enemy.getY() && b.y < enemy.getY() + 40){
                     b.isLive = false;
                     enemy.isLive = false;
+                    Bomb bomb = new Bomb(enemy.getX(), enemy.getY());
+                    bombs.add(bomb);
                 }
                 break;
         }
