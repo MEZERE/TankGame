@@ -14,6 +14,8 @@ public class Frame extends JFrame {
     }
     public Frame(){
         mp = new Panel();
+        Thread thread = new Thread(mp);
+        thread.start();
         this.add(mp);   //面板
         this.setSize(1000,750);
         this.addKeyListener(mp);    //监听

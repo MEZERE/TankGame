@@ -10,7 +10,7 @@ import java.util.Vector;
  * @author mzr
  * @version 1.0
  */
-public class Panel extends JPanel implements KeyListener {
+public class Panel extends JPanel implements KeyListener,Runnable {
 
     int enemtNum = 3;
     Hero hero = null;
@@ -21,7 +21,13 @@ public class Panel extends JPanel implements KeyListener {
         hero.setSpeed(5);
         for (int i = 0; i < enemtNum; i++) {
             Enemy enemy = new Enemy(100 * (i + 1), 0);
+            //方向
             enemy.setDirect(2);
+            //bullet
+            Bullet bullet = new Bullet(enemy.getX()+20,enemy.getY()+60,enemy.getDirect());
+            enemy.bullets.add(bullet);
+            //启动
+            new Thread(bullet).start();
             enemys.add(enemy);
         }
     }
@@ -30,11 +36,23 @@ public class Panel extends JPanel implements KeyListener {
     public void paint(Graphics g){
         super.paint(g);
         g.fillRect(0,0,1000,750);//填充矩形 默认黑色
+        //我方子弹
+        if(hero.bullet != null && hero.bullet.isLive){
+            drawBullet(hero.bullet.x,hero.bullet.y,g,0);
+        }
         //我方坦克
         drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),0);
         //敌方坦克
         for (Enemy enemy : enemys) {
             drawTank(enemy.getX(),enemy.getY(),g,enemy.getDirect(),1);
+            for (int i = 0; i < enemy.bullets.size(); i++) {
+                Bullet bullet = enemy.bullets.get(i);
+                if(bullet != null && bullet.isLive){
+                    drawBullet(bullet.x,bullet.y,g,1);
+                } else {
+                    enemy.bullets.remove(bullet);
+                }
+            }
         }
     }
 
@@ -91,14 +109,26 @@ public class Panel extends JPanel implements KeyListener {
         }
     }
 
+    public void drawBullet(int x,int y,Graphics g,int type){
+        switch(type){
+            case 0: //我方
+                g.setColor(Color.YELLOW);
+                break;
+            case 1: //敌方
+                g.setColor(Color.CYAN);
+                break;
+        }
+        g.draw3DRect(x,y,1,1,false);
+    }
+
     @Override
     public void keyTyped(KeyEvent e) {
 
     }
 
-    //处理wasd键
     @Override
     public void keyPressed(KeyEvent e) {
+        //处理wasd键
         if(e.getKeyCode() == KeyEvent.VK_W){
             hero.setDirect(0);
             hero.moveUp();
@@ -112,11 +142,28 @@ public class Panel extends JPanel implements KeyListener {
             hero.setDirect(3);
             hero.moveLeft();
         }
+        //处理J键
+        if(e.getKeyCode() == KeyEvent.VK_J){
+            hero.shot();
+        }
         this.repaint();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
 
+    }
+
+    @Override
+    public void run() {
+        //每100ms刷新
+        while (true){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            this.repaint();
+        }
     }
 }
