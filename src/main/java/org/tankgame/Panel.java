@@ -57,6 +57,9 @@ public class Panel extends JPanel implements KeyListener,Runnable {
         }
         //敌方坦克
         for (Enemy enemy : enemys) {
+            if(enemy.isLive){
+                drawTank(enemy.getX(),enemy.getY(),g,enemy.getDirect(),1);
+            }
             for (int i = 0; i < enemy.bullets.size(); i++) {
                 Bullet bullet = enemy.bullets.get(i);
                 if(bullet != null && bullet.isLive){
@@ -65,9 +68,6 @@ public class Panel extends JPanel implements KeyListener,Runnable {
                 } else {
                     enemy.bullets.remove(bullet);
                 }
-            }
-            if(enemy.isLive){
-                drawTank(enemy.getX(),enemy.getY(),g,enemy.getDirect(),1);
             }
         }
         //炸弹特效
