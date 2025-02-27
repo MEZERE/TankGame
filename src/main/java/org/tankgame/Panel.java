@@ -23,7 +23,7 @@ public class Panel extends JPanel implements KeyListener,Runnable {
     Image image3 = null;
 
     public Panel(){
-        hero = new Hero(200,100);   //初始化
+        hero = new Hero(200,300);   //初始化
         hero.setSpeed(5);
         for (int i = 0; i < enemtNum; i++) {
             Enemy enemy = new Enemy(100 * (i + 1), 0);
@@ -52,7 +52,9 @@ public class Panel extends JPanel implements KeyListener,Runnable {
             }
         }
         //我方坦克
-        drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),0);
+        if(hero != null && hero.isLive){
+            drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),0);
+        }
         //敌方坦克
         for (Enemy enemy : enemys) {
             if(enemy.isLive){
@@ -152,8 +154,8 @@ public class Panel extends JPanel implements KeyListener,Runnable {
         g.draw3DRect(x,y,1,1,false);
     }
 
-    public void hitTankBullets(Vector<Bullet> bullets){
-        for(Bullet bullet : bullets){
+    public void hitEnemyBullets(){
+        for(Bullet bullet : hero.bullets){
             //判读是否击中
             if(bullet !=null && bullet.isLive){
                 for (Enemy enemy : enemys){
@@ -162,24 +164,35 @@ public class Panel extends JPanel implements KeyListener,Runnable {
             }
         }
     }
-    //判断子弹是否击中敌人
-    public void hitTank(Bullet b,Enemy enemy){
-        switch (enemy.getDirect()){
+
+    public void  hitHeroBullets(){
+        for (Enemy enemy : enemys){
+            for(Bullet bullet : enemy.bullets){
+                if(hero.isLive && bullet.isLive){
+                    hitTank(bullet,hero);
+                }
+            }
+        }
+    }
+
+    //判断子弹是否击中
+    public void hitTank(Bullet b,Tank tank){
+        switch (tank.getDirect()){
             case 0: //向上向下
             case 2:
-                if (b.x > enemy.getX() && b.x < enemy.getX() + 40 && b.y > enemy.getY() && b.y < enemy.getY() + 60){
+                if (b.x > tank.getX() && b.x < tank.getX() + 40 && b.y > tank.getY() && b.y < tank.getY() + 60){
                     b.isLive = false;
-                    enemy.isLive = false;
-                    Bomb bomb = new Bomb(enemy.getX(), enemy.getY());
+                    tank.isLive = false;
+                    Bomb bomb = new Bomb(tank.getX(), tank.getY());
                     bombs.add(bomb);
                 }
                 break;
             case 1: //向右向左
             case 3:
-                if (b.x > enemy.getX() && b.x < enemy.getX() + 60 && b.y > enemy.getY() && b.y < enemy.getY() + 40){
+                if (b.x > tank.getX() && b.x < tank.getX() + 60 && b.y > tank.getY() && b.y < tank.getY() + 40){
                     b.isLive = false;
-                    enemy.isLive = false;
-                    Bomb bomb = new Bomb(enemy.getX(), enemy.getY());
+                    tank.isLive = false;
+                    Bomb bomb = new Bomb(tank.getX(), tank.getY());
                     bombs.add(bomb);
                 }
                 break;
@@ -229,7 +242,8 @@ public class Panel extends JPanel implements KeyListener,Runnable {
                 throw new RuntimeException(e);
             }
             //判读是否击中
-            hitTankBullets(hero.bullets);
+            hitEnemyBullets();
+            hitHeroBullets();
             this.repaint();
         }
     }
