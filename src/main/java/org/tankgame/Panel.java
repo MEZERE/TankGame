@@ -31,11 +31,6 @@ public class Panel extends JPanel implements KeyListener,Runnable {
             enemy.setDirect(2);
             //启动
             new Thread(enemy).start();
-            //bullet
-            Bullet bullet = new Bullet(enemy.getX()+20,enemy.getY()+60,enemy.getDirect());
-            enemy.bullets.add(bullet);
-            //敌人射击
-            new Thread(bullet).start();
             enemys.add(enemy);
         }
     }

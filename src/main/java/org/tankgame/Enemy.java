@@ -17,6 +17,25 @@ public class Enemy extends Tank implements Runnable{
     @Override
     public void run() {
         while (true){
+            if(isLive && bullets.isEmpty()){
+                Bullet bullet = null;
+                switch (getDirect()){
+                    case 0:
+                        bullet = new Bullet(getX() + 20,getY(),0);
+                        break;
+                    case 1:
+                        bullet = new Bullet(getX() + 60,getY() + 20,1);
+                        break;
+                    case 2:
+                        bullet = new Bullet(getX() + 20,getY() + 60,2);
+                        break;
+                    case 3:
+                        bullet = new Bullet(getX(),getY() + 20,3);
+                        break;
+                }
+                bullets.add(bullet);
+                new Thread(bullet).start();
+            }
             //根据方向进行移动
             switch (getDirect()){
                 case 0:
