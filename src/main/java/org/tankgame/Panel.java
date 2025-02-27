@@ -57,19 +57,17 @@ public class Panel extends JPanel implements KeyListener,Runnable {
         }
         //敌方坦克
         for (Enemy enemy : enemys) {
+            for (int i = 0; i < enemy.bullets.size(); i++) {
+                Bullet bullet = enemy.bullets.get(i);
+                if(bullet != null && bullet.isLive){
+                    //敌方子弹
+                    drawBullet(bullet.x,bullet.y,g,1);
+                } else {
+                    enemy.bullets.remove(bullet);
+                }
+            }
             if(enemy.isLive){
                 drawTank(enemy.getX(),enemy.getY(),g,enemy.getDirect(),1);
-                for (int i = 0; i < enemy.bullets.size(); i++) {
-                    Bullet bullet = enemy.bullets.get(i);
-                    if(bullet != null && bullet.isLive){
-                        //敌方子弹
-                        drawBullet(bullet.x,bullet.y,g,1);
-                    } else {
-                        enemy.bullets.remove(bullet);
-                    }
-                }
-            }else {
-                enemys.remove(enemy);
             }
         }
         //炸弹特效
