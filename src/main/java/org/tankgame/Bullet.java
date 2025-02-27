@@ -8,7 +8,7 @@ public class Bullet implements Runnable{
     int x;
     int y;
     int direct;
-    int speed = 2;
+    int speed = 5;
     boolean isLive = true;
 
     public Bullet(int x, int y, int direct) {

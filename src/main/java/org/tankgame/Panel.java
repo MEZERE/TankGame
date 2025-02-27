@@ -49,8 +49,12 @@ public class Panel extends JPanel implements KeyListener,Runnable {
         image3 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/image/bomb_3.png"));
         g.fillRect(0,0,1000,750);//填充矩形 默认黑色
         //我方子弹
-        if(hero.bullet != null && hero.bullet.isLive){
-            drawBullet(hero.bullet.x,hero.bullet.y,g,0);
+        for(Bullet bullet : hero.bullets){
+            if(bullet != null && bullet.isLive){
+                drawBullet(bullet.x,bullet.y,g,0);
+            }else {
+                hero.bullets.remove(bullet);
+            }
         }
         //我方坦克
         drawTank(hero.getX(),hero.getY(),g,hero.getDirect(),0);
@@ -153,6 +157,16 @@ public class Panel extends JPanel implements KeyListener,Runnable {
         g.draw3DRect(x,y,1,1,false);
     }
 
+    public void hitTankBullets(Vector<Bullet> bullets){
+        for(Bullet bullet : bullets){
+            //判读是否击中
+            if(bullet !=null && bullet.isLive){
+                for (Enemy enemy : enemys){
+                    hitTank(bullet,enemy);
+                }
+            }
+        }
+    }
     //判断子弹是否击中敌人
     public void hitTank(Bullet b,Enemy enemy){
         switch (enemy.getDirect()){
@@ -220,11 +234,7 @@ public class Panel extends JPanel implements KeyListener,Runnable {
                 throw new RuntimeException(e);
             }
             //判读是否击中
-            if(hero.bullet !=null && hero.bullet.isLive){
-                for (Enemy enemy : enemys){
-                    hitTank(hero.bullet,enemy);
-                }
-            }
+            hitTankBullets(hero.bullets);
             this.repaint();
         }
     }
